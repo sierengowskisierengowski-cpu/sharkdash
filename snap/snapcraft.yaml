@@ -1,0 +1,64 @@
+name: sharkdash
+adopt-info: sharkdash
+summary: Resource monitor that shows usage and stats
+description: |
+  Resource monitor that shows usage and stats for processor, memory, disks, network and processes.
+  C++ version and continuation of bashtop and bpytop.
+license: Apache-2.0
+
+base: core24
+grade: stable
+confinement: strict
+compression: lzo
+
+contact: https://github.com/kz6fittycent/sharkdash/issues
+issues: https://github.com/kz6fittycent/sharkdash/issues
+source-code: https://github.com/aristocratos/sharkdash
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+  arm64:
+    build-on: [arm64]
+    build-for: [arm64]
+
+apps:
+  sharkdash:
+    command: usr/local/bin/sharkdash
+    environment:
+      LC_ALL: C.UTF-8
+      LANG: C.UTF-8
+    plugs:
+      - mount-observe
+      - process-control
+      - system-observe
+      - hardware-observe
+      - network
+      - network-observe
+      - home
+      - removable-media
+      - opengl
+
+parts:
+  sharkdash:
+    source: https://github.com/aristocratos/sharkdash
+    source-type: git
+    plugin: make
+    make-parameters:
+      - CC=gcc-14
+      - CXX=g++-14
+      - PREFIX=/usr/local
+      - STATIC=true #required
+      - ADDFLAGS="-D SNAPPED" #required
+    build-packages:
+      - coreutils
+      - sed
+      - git
+      - build-essential
+      - gcc-14
+      - g++-14
+    
+    override-pull: |
+      craftctl default
+      craftctl set version="$(git describe --tags | sed 's/^v//' | cut -d "-" -f1)"

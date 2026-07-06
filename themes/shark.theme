@@ -1,0 +1,92 @@
+# Sharkdash default theme — deep ocean palette
+# Compatible with bpytop/bashtop/sharkdash .theme format
+
+# Main background, empty for terminal default
+theme[main_bg]="#0a1628"
+
+# Main text color
+theme[main_fg]="#c8e6f5"
+
+# Title color for boxes
+theme[title]="#4ecdc4"
+
+# Highlight color for keyboard shortcuts
+theme[hi_fg]="#ff6b6b"
+
+# Background color of selected item in processes box
+theme[selected_bg]="#1a4a6e"
+
+# Foreground color of selected item in processes box
+theme[selected_fg]="#f0fbff"
+
+# Color of inactive/disabled text
+theme[inactive_fg]="#3d5a73"
+
+# Misc colors for processes box
+theme[proc_misc]="#4ecdc4"
+
+# Box outline colors
+theme[cpu_box]="#1e5f74"
+theme[mem_box]="#1e5f74"
+theme[net_box]="#1e5f74"
+theme[proc_box]="#1e5f74"
+
+# Box divider line color
+theme[div_line]="#2a4a63"
+
+# Graph text color
+theme[graph_text]="#5a8aa8"
+theme[meter_bg]="#1a3048"
+
+# Temperature graph colors
+theme[temp_start]="#4ecdc4"
+theme[temp_mid]="#45b7d1"
+theme[temp_end]="#ff6b6b"
+
+# CPU graph colors
+theme[cpu_start]="#4ecdc4"
+theme[cpu_mid]="#ffe66d"
+theme[cpu_end]="#ff6b6b"
+
+# Mem/Disk free meter
+theme[free_start]="#1a4a3a"
+theme[free_mid]="#4ecdc4"
+theme[free_end]="#a8f0dc"
+
+# Mem/Disk cached meter
+theme[cached_start]="#1a3050"
+theme[cached_mid]="#45b7d1"
+theme[cached_end]="#7ec8e3"
+
+# Mem/Disk available meter
+theme[available_start]="#3d4a1a"
+theme[available_mid]="#ffe66d"
+theme[available_end]="#fff3a3"
+
+# Mem/Disk used meter
+theme[used_start]="#4a1a2a"
+theme[used_mid]="#ff6b6b"
+theme[used_end]="#ff8e8e"
+
+# Download graph colors
+theme[download_start]="#1a2a5a"
+theme[download_mid]="#45b7d1"
+theme[download_end]="#a8d8f0"
+
+# Upload graph colors
+theme[upload_start]="#3a1a5a"
+theme[upload_mid]="#9b59b6"
+theme[upload_end]="#d4a5e8"
+
+# Process mini-graph colors
+theme[process_start]="#4ecdc4"
+theme[process_mid]="#ffe66d"
+theme[process_end]="#ff6b6b"
+
+# Process list pause/follow/banner colors
+theme[proc_pause_bg]="#ff6b6b"
+theme[proc_follow_bg]="#45b7d1"
+theme[proc_banner_bg]="#1e5f74"
+theme[proc_banner_fg]="#f0fbff"
+theme[followed_bg]="#45b7d1"
+theme[followed_fg]="#f0fbff"
