@@ -25,6 +25,39 @@ git clone <this-repo> && cd sharkdash/nexus
 ./scripts/install.sh --no-packages   # only symlink configs
 ```
 
+### Fix a broken Hyprland machine from another PC (e.g. COSMIC)
+
+If Hyprland crashes into Safe Mode / kicks you back to login, use the recovery
+script on the **broken machine**:
+
+**On your working COSMIC PC (here):**
+
+```bash
+git clone https://github.com/sierengowskisierengowski-cpu/sharkdash.git
+cd sharkdash
+git checkout cursor/hyprland-logout-fix-5ffe
+```
+
+Copy the `nexus/` folder to a USB drive, **or** if both PCs are on the same
+network, skip USB and clone directly on the Hyprland machine.
+
+**On the broken Hyprland PC** (`Ctrl+Alt+F3` → log in):
+
+```bash
+# Option A: from USB
+cd /run/media/$USER/<USB-NAME>/sharkdash/nexus
+chmod +x scripts/recover.sh
+./scripts/recover.sh --copy
+
+# Option B: clone over the network
+git clone https://github.com/sierengowskisierengowski-cpu/sharkdash.git
+cd sharkdash && git checkout cursor/hyprland-logout-fix-5ffe
+cd nexus && chmod +x scripts/recover.sh && ./scripts/recover.sh --copy
+```
+
+Then `Ctrl+Alt+F1` and log in normally. Your old config is backed up to
+`~/.config/hypr.recovery-backup-<timestamp>/`.
+
 The installer symlinks each config into `~/.config` (backing up any existing
 files as `*.bak`) and copies wallpapers into `~/.config/hypr/wallpapers/`.
 
