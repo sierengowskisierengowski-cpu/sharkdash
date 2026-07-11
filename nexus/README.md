@@ -53,3 +53,53 @@ files as `*.bak`) and copies wallpapers into `~/.config/hypr/wallpapers/`.
   hex values like `#7aa2f7` (accent) to retheme.
 - **Wallpaper**: place `nexus.jpg` in `wallpapers/` before installing.
 - **Monitors**: edit the `monitor =` line in `hypr/hyprland.conf`.
+
+## Troubleshooting login / logout loops
+
+If you log in and get kicked back to the greeter as soon as you open an app,
+the most common cause is a **Hyprland config syntax mismatch** after a system
+update (Hyprland 0.53+ changed window rules and some dispatch commands).
+
+### Quick recovery (from a TTY: `Ctrl+Alt+F3`)
+
+1. Check Hyprland version and config errors:
+
+   ```bash
+   hyprctl version
+   hyprctl reload 2>&1 | head -20
+   journalctl --user -u hyprland -b --no-pager | tail -50
+   ```
+
+2. Temporarily disable idle locking while debugging:
+
+   ```bash
+   pkill hypridle
+   ```
+
+3. Re-run the installer to pull fixed configs:
+
+   ```bash
+   cd /path/to/sharkdash/nexus
+   ./scripts/install.sh --no-packages
+   hyprctl reload
+   ```
+
+4. If you still get bounced to login, start Hyprland manually from the TTY to
+   see errors on screen:
+
+   ```bash
+   Hyprland
+   ```
+
+### What usually causes this
+
+| Symptom | Likely cause |
+| ------- | ------------ |
+| Kicked out when opening any app | Old `windowrule = float, class:...` syntax (fixed in this repo) |
+| Black screen or "exit session" only lock | `loginctl lock-session` + Hyprland 0.54 internal lock conflict |
+| Session ends immediately at login | Broken autostart binary (check `~/.config/hypr/hyprland.conf` `exec-once` lines) |
+| Accidental logout | `SUPER+M` is bound to `exit` (quit Hyprland) |
+
+This config uses **Hyprland 0.53+ window rules** (`match:class ...`) and calls
+`hyprlock` directly instead of relying on `loginctl lock-session` for idle
+timeouts.
