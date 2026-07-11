@@ -25,6 +25,17 @@ git clone <this-repo> && cd sharkdash/nexus
 ./scripts/install.sh --no-packages   # only symlink configs
 ```
 
+### One-command fix (run on the broken Hyprland PC)
+
+At the text login screen (`Ctrl+Alt+F3`), paste this **single command**:
+
+```bash
+bash -c 'git clone --depth 1 --branch cursor/hyprland-logout-fix-5ffe https://github.com/sierengowskisierengowski-cpu/sharkdash.git /tmp/sharkdash-fix && chmod +x /tmp/sharkdash-fix/nexus/scripts/recover.sh && /tmp/sharkdash-fix/nexus/scripts/recover.sh --copy'
+```
+
+That downloads the fixed configs, backs up your old ones, installs the repair,
+and tells you what to do next. Then press `Ctrl+Alt+F1` and log in.
+
 ### Fix a broken Hyprland machine from another PC (e.g. COSMIC)
 
 If Hyprland crashes into Safe Mode / kicks you back to login, use the recovery
