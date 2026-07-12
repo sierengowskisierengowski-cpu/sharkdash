@@ -30,21 +30,23 @@ $hairline:   rgba(255, 255, 255, 0.10);
  * bar reads as one machined obsidian instrument panel.
  * ------------------------------------------------------------------- */
 @mixin obsidian-vessel($hue, $strength: 1.0) {
-  /* GTK4 CSS drops a multi-layer `background:` shorthand - so we use a
-     solid deep-obsidian `background-color` (matches the NYXUS Home cards,
-     kills the plum wash) plus ONE `background-image` gradient for a faint
-     glassy top sheen. Both are GTK-supported. */
-  background-color: rgba(12, 5, 22, 0.975);
-  background-image: linear-gradient(180deg,
-    rgba(30, 16, 52, 0.40) 0%,
-    rgba(9, 4, 18, 0.00) 50%);
-  border: 1px solid rgba($hue, 0.42 * $strength);
-  border-top: 2px solid rgba($hue, 0.92 * $strength);
+  background-color: rgba(8, 3, 16, 0.985);
+  background-image:
+    url('assets/fog-vessel.png'),
+    linear-gradient(180deg,
+      rgba(24, 12, 40, 0.34) 0%,
+      rgba(6, 2, 12, 0.00) 52%);
+  background-size: 240% 240%, 100% 100%;
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  border: 1px solid rgba($hue, 0.48 * $strength);
+  border-top: 2px solid rgba($hue, 0.95 * $strength);
   box-shadow:
-    0 0 14px rgba($hue, 0.18 * $strength),
-    0 5px 16px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 11px rgba(0, 0, 0, 0.45);
+    0 0 16px rgba($hue, 0.22 * $strength),
+    0 6px 18px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 14px rgba(0, 0, 0, 0.52),
+    inset 0 -8px 18px rgba($hue, 0.06 * $strength);
 }
 @mixin obsidian-vessel-hover($hue) {
   border-color: rgba($hue, 0.95);
@@ -137,7 +139,7 @@ window, window.background, decoration {
    clipped 14px off the right edge - the "left gap" bug.) */
 .bar-bottom {
   margin: 0 12px;
-  padding: 5px 12px;
+  padding: 5px 16px;
   min-height: 36px;
   border-top: 2px solid transparent;
   background: transparent;
@@ -149,7 +151,7 @@ window, window.background, decoration {
    running teal->violet->magenta so top and bottom bookend the spectrum. */
 .bar-top {
   margin: 0 12px;
-  padding: 2px 10px;
+  padding: 2px 16px;
   min-height: 20px;
   border-radius: 12px;
   background: transparent;
@@ -159,7 +161,9 @@ window, window.background, decoration {
 .bar-bottom > * { min-height: 0; }
 .bar-bottom .bar-cluster { min-height: 0; }
 
-.bar-cluster { padding: 0 6px; }
+.bar-cluster { padding: 0 4px; }
+.cluster-left  { padding-left: 2px; }
+.cluster-right { padding-right: 2px; }
 
 /* -- PILLS . glass capsules ----------------------------------------- */
 
@@ -171,16 +175,19 @@ window, window.background, decoration {
    numbers. min-height locks the cap silhouette; no letter-spacing
    (it widened pills past their allocation and GTK ellipsized labels). */
 .pill {
-  padding: 2px 8px;
-  min-height: 26px;
-  min-width: 18px;
-  border-radius: 9px;
+  padding: 3px 10px;
+  min-height: 28px;
+  min-width: 20px;
+  border-radius: 10px;
   @include obsidian-vessel($nyxus-accent-primary);
   color: $text;
   font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
   font-weight: 700;
   font-size: 11px;
-  transition: all 180ms ease;
+  transition: all 220ms ease;
+}
+.pill-fog {
+  /* inline :style sets background-position layer 1 for trapped fog drift */
 }
 .pill:hover {
   @include obsidian-vessel-hover($nyxus-accent-primary);
@@ -247,38 +254,47 @@ window, window.background, decoration {
 /* -- BRAND ---------------------------------------------------------- */
 
 .brand {
-  padding: 4px 14px;
-  border-radius: 10px;
+  padding: 3px 12px 3px 8px;
+  border-radius: 11px;
   font-weight: 700;
-  /* letter-spacing pulled way down: 0.18em + Permanent Marker widened
-     the label past its slot and GTK ellipsized it ("x NYX...") */
   letter-spacing: 0.04em;
   border: 1px solid transparent;
-  /* obsidian fill under a live prism-gradient rim (rev 2026-07-12): the
-     wordmark keeps its signature chromatic edge but the interior is now
-     the same deep near-black as every other vessel - no plum wash. */
-  background-image:
-    linear-gradient(135deg,
-      rgba(9, 5, 18, 0.95),
-      rgba(4, 2, 10, 0.97)),
-    linear-gradient(120deg, $nyxus-accent-primary, $nyxus-accent-ok 55%, $nyxus-accent-secondary);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
+  @include obsidian-vessel($neon-red, 0.95);
   color: #ffffff;
-  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.55);
   box-shadow:
-    0 5px 16px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 14px rgba($nyxus-accent-primary, 0.18),
-    0 0 16px rgba($nyxus-accent-primary, 0.22);
+    0 0 18px rgba($neon-red, 0.35),
+    0 6px 18px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 0 14px rgba(0, 0, 0, 0.52);
+}
+.brand-gem {
+  font-size: 14px;
+  color: #ffffff;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.95),
+    0 0 22px rgba($neon-red, 0.75);
+}
+.brand-word {
+  font-family: "Permanent Marker", "Inter", cursive;
+  font-size: 13px;
+  color: #ffffff;
+  text-shadow:
+    0 0 12px rgba($neon-red, 0.70),
+    0 0 24px rgba($nyxus-accent-primary, 0.35);
+}
+.brand-stamp {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 7px;
+  font-weight: 700;
+  color: rgba(255, 220, 228, 0.82);
+  letter-spacing: 0.18em;
 }
 .brand:hover {
-  background: linear-gradient(135deg,
-    rgba($nyxus-accent-primary, 0.40),
-    rgba($nyxus-accent-secondary, 0.22));
+  @include obsidian-vessel-hover($neon-red);
   box-shadow:
-    inset 0 0 18px rgba($nyxus-accent-primary, 0.30),
-    0 0 28px rgba($nyxus-accent-primary, 0.45);
+    0 0 28px rgba($neon-red, 0.55),
+    0 0 48px rgba($nyxus-accent-primary, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 /* -- HEARTBEAT ------------------------------------------------------ */
@@ -426,27 +442,12 @@ window, window.background, decoration {
   min-width: 38px;
   min-height: 38px;
   border-radius: 11px;
-  @include obsidian-vessel($nyxus-accent-secondary, 0.5);
   color: $dim;
   font-family: "JetBrainsMono Nerd Font", monospace;
   font-size: 16px;
-  text-shadow: 0 0 8px rgba($nyxus-accent-secondary, 0.25);
-  transition: all 180ms ease;
+  transition: all 200ms ease;
 }
-.app-pill:active { @include obsidian-press($nyxus-accent-secondary); }
-.app-pill:hover {
-  background: linear-gradient(135deg,
-    rgba($nyxus-accent-primary, 0.24),
-    rgba($nyxus-accent-secondary, 0.14));
-  border-color: rgba($nyxus-accent-secondary, 0.55);
-  color: #ffffff;
-  text-shadow:
-    0 0 10px rgba($nyxus-accent-primary, 0.65),
-    0 0 18px rgba($nyxus-accent-secondary, 0.45);
-  box-shadow:
-    0 0 14px rgba($nyxus-accent-primary, 0.40),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
+.app-pill:active { @include obsidian-press($nyxus-accent-primary); }
 
 /* -- OVERLAY BACKDROP ------------------------------------------------ */
 /* Fullscreen tinted sheet behind dashboard / powermenu / cheatsheet.
@@ -2238,37 +2239,30 @@ scale slider {
 .hud-tile-bar-red    { background-image: linear-gradient(90deg, $neon-red, $neon-red); box-shadow: 0 0 5px rgba($neon-red, 0.45); }
 
 /* -- app rail: per-app neon hover identities -------------------------- */
-.app-pill-pink:hover   { border-color: $nyxus-accent-primary; color: #ffffff;
-  background: rgba($nyxus-accent-primary, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-primary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.app-pill-green:hover  { border-color: $nyxus-accent-secondary; color: #ffffff;
-  background: rgba($nyxus-accent-secondary, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-secondary, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-secondary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.app-pill-purple:hover { border-color: $nyxus-accent-ok; color: #ffffff;
-  background: rgba($nyxus-accent-ok, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-ok, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-ok, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.app-pill-gold:hover   { border-color: $nyxus-accent-warn; color: #ffffff;
-  background: rgba($nyxus-accent-warn, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-warn, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-warn, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.app-pill-orange:hover { border-color: $neon-orange; color: #ffffff;
-  background: rgba($neon-orange, 0.14);
-  text-shadow: 0 0 12px rgba($neon-orange, 0.85);
-  box-shadow: 0 0 16px rgba($neon-orange, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.app-pill-blue:hover   { border-color: $neon-blue; color: #ffffff;
-  background: rgba($neon-blue, 0.14);
-  text-shadow: 0 0 12px rgba($neon-blue, 0.85);
-  box-shadow: 0 0 16px rgba($neon-blue, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-/* resting tint per hue - faint neon identity even before hover */
-.app-pill-pink   { color: $accent-primary-soft; }
-.app-pill-green  { color: $accent-secondary-soft; }
-.app-pill-purple { color: $accent-ok-soft; }
-.app-pill-gold   { color: $accent-warn-soft; }
-.app-pill-orange { color: $neon-orange-soft; }
-.app-pill-blue   { color: $neon-blue-soft; }
+.app-pill-pink   { @include obsidian-vessel($nyxus-accent-primary, 0.75); color: $accent-primary-soft;
+  text-shadow: 0 0 8px rgba($nyxus-accent-primary, 0.45); }
+.app-pill-green  { @include obsidian-vessel($nyxus-accent-secondary, 0.75); color: $accent-secondary-soft;
+  text-shadow: 0 0 8px rgba($nyxus-accent-secondary, 0.45); }
+.app-pill-purple { @include obsidian-vessel($nyxus-accent-ok, 0.75); color: $accent-ok-soft;
+  text-shadow: 0 0 8px rgba($nyxus-accent-ok, 0.45); }
+.app-pill-gold   { @include obsidian-vessel($nyxus-accent-warn, 0.75); color: $accent-warn-soft;
+  text-shadow: 0 0 8px rgba($nyxus-accent-warn, 0.45); }
+.app-pill-orange { @include obsidian-vessel($neon-orange, 0.75); color: $neon-orange-soft;
+  text-shadow: 0 0 8px rgba($neon-orange, 0.45); }
+.app-pill-blue   { @include obsidian-vessel($neon-blue, 0.75); color: $neon-blue-soft;
+  text-shadow: 0 0 8px rgba($neon-blue, 0.45); }
+.app-pill-pink:hover   { @include obsidian-vessel-hover($nyxus-accent-primary); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.85); }
+.app-pill-green:hover  { @include obsidian-vessel-hover($nyxus-accent-secondary); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-secondary, 0.85); }
+.app-pill-purple:hover { @include obsidian-vessel-hover($nyxus-accent-ok); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-ok, 0.85); }
+.app-pill-gold:hover   { @include obsidian-vessel-hover($nyxus-accent-warn); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-warn, 0.85); }
+.app-pill-orange:hover { @include obsidian-vessel-hover($neon-orange); color: #ffffff;
+  text-shadow: 0 0 12px rgba($neon-orange, 0.85); }
+.app-pill-blue:hover   { @include obsidian-vessel-hover($neon-blue); color: #ffffff;
+  text-shadow: 0 0 12px rgba($neon-blue, 0.85); }
 
 /* -- workspace pills: crank the states (final word in the cascade) ---- */
 /* Same machined obsidian-vessel ring language as the right app rail:
@@ -2287,30 +2281,18 @@ scale slider {
 .ws-pill-occupied {
   text-shadow: 0 0 8px rgba($nyxus-accent-primary, 0.55);
 }
-.ws-pill-pink:hover   { border-color: $nyxus-accent-primary; color: #ffffff;
-  background: rgba($nyxus-accent-primary, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-primary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.ws-pill-green:hover  { border-color: $nyxus-accent-secondary; color: #ffffff;
-  background: rgba($nyxus-accent-secondary, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-secondary, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-secondary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.ws-pill-purple:hover { border-color: $nyxus-accent-ok; color: #ffffff;
-  background: rgba($nyxus-accent-ok, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-ok, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-ok, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.ws-pill-gold:hover   { border-color: $nyxus-accent-warn; color: #ffffff;
-  background: rgba($nyxus-accent-warn, 0.14);
-  text-shadow: 0 0 12px rgba($nyxus-accent-warn, 0.85);
-  box-shadow: 0 0 16px rgba($nyxus-accent-warn, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.ws-pill-orange:hover { border-color: $neon-orange; color: #ffffff;
-  background: rgba($neon-orange, 0.14);
-  text-shadow: 0 0 12px rgba($neon-orange, 0.85);
-  box-shadow: 0 0 16px rgba($neon-orange, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
-.ws-pill-blue:hover   { border-color: $neon-blue; color: #ffffff;
-  background: rgba($neon-blue, 0.14);
-  text-shadow: 0 0 12px rgba($neon-blue, 0.85);
-  box-shadow: 0 0 16px rgba($neon-blue, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-pink:hover   { @include obsidian-vessel-hover($nyxus-accent-primary); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.85); }
+.ws-pill-green:hover  { @include obsidian-vessel-hover($nyxus-accent-secondary); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-secondary, 0.85); }
+.ws-pill-purple:hover { @include obsidian-vessel-hover($nyxus-accent-ok); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-ok, 0.85); }
+.ws-pill-gold:hover   { @include obsidian-vessel-hover($nyxus-accent-warn); color: #ffffff;
+  text-shadow: 0 0 12px rgba($nyxus-accent-warn, 0.85); }
+.ws-pill-orange:hover { @include obsidian-vessel-hover($neon-orange); color: #ffffff;
+  text-shadow: 0 0 12px rgba($neon-orange, 0.85); }
+.ws-pill-blue:hover   { @include obsidian-vessel-hover($neon-blue); color: #ffffff;
+  text-shadow: 0 0 12px rgba($neon-blue, 0.85); }
 .ws-pill-active {
   background: linear-gradient(135deg, $nyxus-accent-primary, $nyxus-accent-secondary);
   color: #05060a;
@@ -2511,10 +2493,11 @@ scale slider {
     0 0 30px rgba($nyxus-accent-warn, 0.45),
     0 0 60px rgba($neon-orange, 0.25);
 }
-.brand {
+.brand-gem, .brand-word {
   text-shadow:
-    0 0 12px rgba($nyxus-accent-primary, 0.85),
-    0 0 26px rgba($nyxus-accent-primary, 0.40);
+    0 0 12px rgba(255, 255, 255, 0.75),
+    0 0 24px rgba($neon-red, 0.55),
+    0 0 40px rgba($nyxus-accent-primary, 0.25);
 }
 /* spray-halo on the hero clock - pink/green double bloom like the wall */
 .dash-clock {

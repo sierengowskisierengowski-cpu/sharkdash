@@ -126,6 +126,10 @@
 (deflisten STARLIGHT :initial '{"f":0,"tw":0.5}'
                  "~/.config/eww/scripts/starlight-anim.sh")
 
+;; trapped fog drift inside obsidian pill vessels (rev 2026-07-12)
+(deflisten FOG :initial '{"x":50,"y":50,"a":0}'
+             "~/.config/eww/scripts/fog-swirl.sh")
+
 ;; ── live moon phase (starlight top bar tile) ─────────────────────────
 (defpoll MOON :interval "1800s"
               :initial '{"glyph":"󰽢","name":"Moon","pct":0}'
@@ -137,10 +141,24 @@
 
 (defwidget nyxus_brand []
   (button :class "brand"
-          :style "opacity: ${NEONFLICK};"
-          :onclick "rofi -show drun -theme ~/.config/rofi/startmenu.rasi 2>/dev/null || wofi --show drun"
-          :tooltip "NYXUS · Start menu"
-    "✕ NYXUS"))
+          :style "background-position: ${FOG.x}% ${FOG.y}%, center; opacity: ${NEONFLICK};"
+          :onclick "rofi -show drun -theme ~/.config/rofi/startmenu.rasi 2>/dev/null || wofi --show drun &"
+          :tooltip "NYXUS Signature Edition · Start menu"
+    (box :orientation "h" :space-evenly false :spacing 7
+      (label :class "brand-gem" :text "◆")
+      (box :orientation "v" :space-evenly false :spacing 0
+        (label :class "brand-word" :text "NYXUS")
+        (label :class "brand-stamp" :text "SIGNATURE")))))
+
+;; Reusable status pill with live trapped-fog interior drift.
+(defwidget pill_btn [class text ?onclick ?onrightclick ?onmiddleclick ?tooltip]
+  (button :class "pill pill-fog ${class}"
+          :style "background-position: ${FOG.x}% ${FOG.y}%, center;"
+          :onclick "${onclick ?: ''}"
+          :onrightclick "${onrightclick ?: ''}"
+          :onmiddleclick "${onmiddleclick ?: ''}"
+          :tooltip "${tooltip ?: ''}"
+    "${text}"))
 
 (defwidget heartbeat []
   (label :class "heartbeat" :text "● SYS·LIVE" :tooltip "Session is alive"))
@@ -190,46 +208,46 @@
       (label :class "clock-date"  :text "·  ${TIME.date}"))))
 
 (defwidget audio_widget []
-  (button :class "pill p-audio"
-          :onclick "eww open --toggle mixer &"
-          :onrightclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ~/.config/eww/scripts/osd-show.sh osd-volume &"
-          :tooltip "${AUDIO.tooltip} · click mixer · right-click mute"
-    "${AUDIO.icon}  ${AUDIO.vol}%"))
+  (pill_btn :class "p-audio"
+            :onclick "eww open --toggle mixer &"
+            :onrightclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ~/.config/eww/scripts/osd-show.sh osd-volume &"
+            :tooltip "${AUDIO.tooltip} · click mixer · right-click mute"
+            :text "${AUDIO.icon}  ${AUDIO.vol}%"))
 
 (defwidget mic_widget []
-  (button :class {MIC.mute == "yes" ? "pill p-mic mic-mute" : "pill p-mic"}
-          :onclick "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle &"
-          :tooltip "${MIC.tooltip} · click to toggle"
-    "${MIC.icon}"))
+  (pill_btn :class {MIC.mute == "yes" ? "p-mic mic-mute" : "p-mic"}
+            :onclick "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle &"
+            :tooltip "${MIC.tooltip} · click to toggle"
+            :text "${MIC.icon}"))
 
 (defwidget net_widget []
-  (button :class "pill p-net"
-          :onclick "eww open --toggle wifi &"
-          :onrightclick "~/.config/eww/scripts/wifi-action.sh toggle &"
-          :tooltip "${NETWORK.tooltip} · click wifi panel · right-click toggle radio"
-    "${NETWORK.icon}  ${NETWORK.label}"))
+  (pill_btn :class "p-net"
+            :onclick "eww open --toggle wifi &"
+            :onrightclick "~/.config/eww/scripts/wifi-action.sh toggle &"
+            :tooltip "${NETWORK.tooltip} · click wifi panel · right-click toggle radio"
+            :text "${NETWORK.icon}  ${NETWORK.label}"))
 
 (defwidget bluetooth_widget []
-  (button :class {BLUETOOTH.powered == "off" ? "pill p-bt bt-off" :
-                  BLUETOOTH.connected > 0    ? "pill p-bt bt-conn" : "pill p-bt"}
-          :onclick "eww open --toggle bluetooth &"
-          :onrightclick "${BLUETOOTH.powered == 'off' ? 'bluetoothctl power on' : 'bluetoothctl power off'} &"
-          :tooltip "${BLUETOOTH.tooltip} · click panel · right-click toggle"
-    "  ${BLUETOOTH.label}"))
+  (pill_btn :class {BLUETOOTH.powered == "off" ? "p-bt bt-off" :
+                    BLUETOOTH.connected > 0    ? "p-bt bt-conn" : "p-bt"}
+            :onclick "eww open --toggle bluetooth &"
+            :onrightclick "${BLUETOOTH.powered == 'off' ? 'bluetoothctl power on' : 'bluetoothctl power off'} &"
+            :tooltip "${BLUETOOTH.tooltip} · click panel · right-click toggle"
+            :text "  ${BLUETOOTH.label}"))
 
 (defwidget battery_widget []
-  (button :class {BATTERY.status == "Charging" ? "pill p-batt batt-charge" :
-                  BATTERY.capacity < 20        ? "pill p-batt batt-low"    :
-                                                 "pill p-batt"}
-          :tooltip "${BATTERY.tooltip}"
-    "${BATTERY.icon}  ${BATTERY.capacity}%"))
+  (pill_btn :class {BATTERY.status == "Charging" ? "p-batt batt-charge" :
+                    BATTERY.capacity < 20        ? "p-batt batt-low"    :
+                                                   "p-batt"}
+            :tooltip "${BATTERY.tooltip}"
+            :text "${BATTERY.icon}  ${BATTERY.capacity}%"))
 
 (defwidget brightness_widget []
-  (button :class "pill p-brt"
-          :onclick "eww open --toggle brightness-flyout &"
-          :onrightclick "brightnessctl set 10%- && ~/.config/eww/scripts/osd-show.sh osd-brightness &"
-          :tooltip "Brightness ${BACKLIGHT.percent}% · click panel · right-click decrease"
-    "☼  ${BACKLIGHT.percent}%"))
+  (pill_btn :class "p-brt"
+            :onclick "eww open --toggle brightness-flyout &"
+            :onrightclick "brightnessctl set 10%- && ~/.config/eww/scripts/osd-show.sh osd-brightness &"
+            :tooltip "Brightness ${BACKLIGHT.percent}% · click panel · right-click decrease"
+            :text "☼  ${BACKLIGHT.percent}%"))
 
 ;; ── search bar pill (opens the NYXUS start menu, which has its own
 ;;    search input). NOTE: there is no eww `startmenu` window — the
@@ -252,44 +270,44 @@
     (button :class "flyout-close" :onclick "eww close brightness-flyout" "Close (Esc)")))
 
 (defwidget powerprof_widget []
-  (button :class {POWERPROF.active == "performance" ? "pill p-pp pp-perf" :
-                  POWERPROF.active == "power-saver" ? "pill p-pp pp-save" : "pill p-pp"}
-          :onclick "~/.config/eww/scripts/qs-toggle.sh profile &"
-          :tooltip "${POWERPROF.tooltip} · click to cycle"
-    "${POWERPROF.icon}"))
+  (pill_btn :class {POWERPROF.active == "performance" ? "p-pp pp-perf" :
+                    POWERPROF.active == "power-saver" ? "p-pp pp-save" : "p-pp"}
+            :onclick "~/.config/eww/scripts/qs-toggle.sh profile &"
+            :tooltip "${POWERPROF.tooltip} · click to cycle"
+            :text "${POWERPROF.icon}"))
 
 (defwidget updates_widget []
-  (button :class {UPDATES.count > 24 ? "pill p-upd upd-many" : "pill p-upd"}
-          :onclick "eww open --toggle updates &"
-          :tooltip "${UPDATES.tooltip} · click for update center"
-    "${UPDATES.icon}"))
+  (pill_btn :class {UPDATES.count > 24 ? "p-upd upd-many" : "p-upd"}
+            :onclick "eww open --toggle updates &"
+            :tooltip "${UPDATES.tooltip} · click for update center"
+            :text "${UPDATES.icon}"))
 
 (defwidget notifs_widget []
-  (button :class {NOTIFS.paused == "true" ? "pill p-notif notif-dnd" :
-                  NOTIFS.total > 0        ? "pill p-notif notif-on"  : "pill p-notif"}
-          :onclick "eww open --toggle notifications &"
-          :onrightclick "dunstctl set-paused toggle &"
-          :onmiddleclick "dunstctl close-all &"
-          :tooltip "${NOTIFS.tooltip} · click panel · right-click DND · middle clear all"
-    "${NOTIFS.total > 0 ? "${NOTIFS.icon} ${NOTIFS.label}" : NOTIFS.icon}"))
+  (pill_btn :class {NOTIFS.paused == "true" ? "p-notif notif-dnd" :
+                    NOTIFS.total > 0        ? "p-notif notif-on"  : "p-notif"}
+            :onclick "eww open --toggle notifications &"
+            :onrightclick "dunstctl set-paused toggle &"
+            :onmiddleclick "dunstctl close-all &"
+            :tooltip "${NOTIFS.tooltip} · click panel · right-click DND · middle clear all"
+            :text "${NOTIFS.total > 0 ? "${NOTIFS.icon} ${NOTIFS.label}" : NOTIFS.icon}"))
 
 (defwidget qs_widget []
-  (button :class "pill qs-pill"
-          :onclick "eww open --toggle quicksettings &"
-          :tooltip "Quick settings"
-    "⚙"))
+  (pill_btn :class "qs-pill"
+            :onclick "eww open --toggle quicksettings &"
+            :tooltip "Quick settings"
+            :text "⚙"))
 
 (defwidget cal_widget []
-  (button :class "pill cal-pill"
-          :onclick "eww open --toggle calendar &"
-          :tooltip "Calendar · ${TIME.long}"
-    "▦"))
+  (pill_btn :class "cal-pill"
+            :onclick "eww open --toggle calendar &"
+            :tooltip "Calendar · ${TIME.long}"
+            :text "▦"))
 
 (defwidget power_button []
-  (button :class "pill power-pill"
-          :onclick "eww open --toggle powermenu &"
-          :tooltip "Power menu"
-    "⏻"))
+  (pill_btn :class "power-pill"
+            :onclick "eww open --toggle powermenu &"
+            :tooltip "Power menu"
+            :text "⏻"))
 
 (defwidget tray_dummy []
   (label :class "tray-dummy" :text "·  ·  ·" :tooltip "Tray placeholder"))
@@ -324,6 +342,7 @@
   (button :class {WORKSPACES.active == id ? "ws-pill ws-pill-active ws-pill-${hue ?: 'pink'}" :
                   (occ ?: false)          ? "ws-pill ws-pill-occupied ws-pill-${hue ?: 'pink'}" :
                                             "ws-pill ws-pill-${hue ?: 'pink'}"}
+          :style "background-position: ${FOG.x}% ${FOG.y}%, center;"
           :onclick "hyprctl dispatch workspace ${id} &"
           :tooltip "Workspace ${id}"
     "${id}"))
@@ -349,7 +368,9 @@
 ;; `hue` gives every rail icon its own neon hover identity
 ;; (.app-pill-<hue> in eww.scss — HOME-HUD language, rev 2026-07-09).
 (defwidget app_launcher [glyph cmd label ?hue]
-  (button :class "app-pill app-pill-${hue ?: 'pink'}" :onclick "${cmd} &" :tooltip "${label}" "${glyph}"))
+  (button :class "app-pill app-pill-${hue ?: 'pink'}" :onclick "${cmd} &" :tooltip "${label}"
+          :style "background-position: ${FOG.x}% ${FOG.y}%, center;"
+    "${glyph}"))
 
 (defwidget app_rail []
   (box :class "app-rail" :orientation "v" :space-evenly false :spacing 10 :valign "center"
@@ -375,7 +396,7 @@
 (defwidget bar_bottom_layout []
   (centerbox :class "bar bar-bottom" :orientation "h"
     :style "background-image: linear-gradient(${PRISM.a}deg, rgba(0,0,0,0) 8%, rgba(80,225,190,${round(0.01 + STARLIGHT.tw * 0.022, 3)}) 32%, rgba(150,90,255,${round(0.015 + STARLIGHT.tw * 0.03, 3)}) 58%, rgba(255,73,148,${round(0.006 + STARLIGHT.tw * 0.012, 3)}) 76%, rgba(0,0,0,0) 92%), url('assets/starlight-twinkle-strip-${STARLIGHT.f}.png'), url('assets/starlight-strip.png'), linear-gradient(180deg, rgba(7,3,14,0.965), rgba(2,1,7,0.945)), linear-gradient(${PRISM.a}deg, #ff3cac 0%, #784bff 33%, #2bd2ff 66%, #ff3cac 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), inset 0 0 26px rgba(0,0,0,0.45);"
-    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 10 :halign "start"
+    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 10 :halign "center"
       (nyxus_brand) (heartbeat) (syspulse_widget))
     (box :class "bar-cluster cluster-center" :space-evenly false :spacing 12 :halign "center"
       (cava_widget) (clock_widget))
@@ -394,7 +415,7 @@
 (defwidget bar_top_layout []
   (centerbox :class "bar bar-top" :orientation "h"
     :style "background-image: linear-gradient(${PRISM.b}deg, rgba(0,0,0,0) 8%, rgba(80,225,190,${round(0.01 + STARLIGHT.tw * 0.022, 3)}) 32%, rgba(150,90,255,${round(0.015 + STARLIGHT.tw * 0.03, 3)}) 58%, rgba(255,73,148,${round(0.006 + STARLIGHT.tw * 0.012, 3)}) 76%, rgba(0,0,0,0) 92%), url('assets/starlight-twinkle-top-${STARLIGHT.f}.png'), url('assets/starlight-top.png'), linear-gradient(180deg, rgba(7,3,14,0.965), rgba(2,1,7,0.945)), linear-gradient(${PRISM.b}deg, #2bd2ff 0%, #784bff 33%, #ff3cac 66%, #2bd2ff 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), inset 0 0 20px rgba(0,0,0,0.45);"
-    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 8 :halign "start"
+    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 8 :halign "center"
       (label :class "ticker-label" :style "opacity: ${NEONFLICK};" :text "▌ NYXUS · LIVE")
       (hud_tile :hue "pink"   :glyph "󰇅" :label "HOST" :value "${BARTILES.host}" :tip "Hostname")
       (hud_tile :hue "purple" :glyph "󰌽" :label "KRN"  :value "${BARTILES.kern}" :tip "Kernel release")

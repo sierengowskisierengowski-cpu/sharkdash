@@ -43,20 +43,20 @@ FRAMES = 16
 FELT_TOP = (14, 7, 26)     # faint obsidian violet at the top edge
 FELT_MID = (8, 4, 16)
 FELT_BOT = (3, 1, 8)       # essentially black at the bottom
-FELT_ALPHA = 240           # ~0.94 — kills the wallpaper "coat", stars pop
+FELT_ALPHA = 252           # ~0.99 true black ceiling; fibers are the light
 
-LINE = (170, 150, 245)
+LINE = (190, 175, 255)
 
 
 def tint():
     roll = random.random()
-    if roll < 0.62:
-        return (238, 240, 255)   # cool fiber white
-    if roll < 0.82:
-        return (255, 243, 222)   # warm champagne
-    if roll < 0.94:
-        return (196, 210, 255)   # icy blue
-    return (255, 226, 236)       # faint rose (rare)
+    if roll < 0.72:
+        return (255, 255, 255)   # diamond white
+    if roll < 0.86:
+        return (248, 250, 255)   # ice white
+    if roll < 0.95:
+        return (255, 252, 242)   # warm diamond
+    return (235, 242, 255)       # faint blue-white
 
 
 def felt(w, h):
@@ -87,7 +87,7 @@ def felt(w, h):
         cx, cy = random.randint(0, w), random.randint(0, h)
         rr = random.randint(max(40, min(w, h)), max(90, min(w, h) * 3))
         col = random.choice([(96, 52, 190), (58, 28, 140), (120, 44, 170)])
-        hd.ellipse((cx - rr, cy - rr // 3, cx + rr, cy + rr // 3), fill=(*col, 7))
+        hd.ellipse((cx - rr, cy - rr // 3, cx + rr, cy + rr // 3), fill=(*col, 3))
     haze = haze.filter(ImageFilter.GaussianBlur(radius=max(18, min(w, h) // 3)))
     img.alpha_composite(haze)
     return img
@@ -134,7 +134,7 @@ def star_sprite(size, brightness, col, spikes, diag=False):
     d = ImageDraw.Draw(patch)
     cr = max(0.6, size * 0.55)
     d.ellipse((cx - cr, cy - cr, cx + cr, cy + cr),
-              fill=(min(255, r + 45), min(255, g + 45), min(255, b + 45), int(brightness)))
+              fill=(255, 255, 255, min(255, int(brightness * 1.08))))
     return patch, pad
 
 
@@ -174,17 +174,17 @@ class Star:
 
 def make_star(x, y, size, col, hero=False):
     if hero:
-        base = random.uniform(60, 110)
-        amp = random.uniform(130, 165)
-        gamma = random.uniform(1.4, 2.2)
+        base = random.uniform(90, 140)
+        amp = random.uniform(150, 200)
+        gamma = random.uniform(1.2, 1.9)
     elif size >= 1.0:
-        base = random.uniform(45, 90)
-        amp = random.uniform(60, 120)
-        gamma = random.uniform(1.0, 1.8)
+        base = random.uniform(65, 115)
+        amp = random.uniform(80, 140)
+        gamma = random.uniform(0.9, 1.6)
     else:
-        base = random.uniform(25, 55)
-        amp = random.uniform(30, 80)
-        gamma = random.uniform(0.8, 1.5)
+        base = random.uniform(35, 70)
+        amp = random.uniform(40, 95)
+        gamma = random.uniform(0.7, 1.3)
     k = random.choices([1, 2, 3], weights=[5, 3, 2])[0]
     return Star(x, y, size, col, base, amp, k, random.uniform(0, math.tau), gamma)
 
@@ -241,8 +241,8 @@ def build(name, w, h, spec, cbox, n_hero, n_mid, n_dust):
         frame = Image.new("RGBA", (w, h), (0, 0, 0, 0))
         for s in stars:
             br = s.brightness(f)
-            spikes = s.size >= 1.5 and br > 150
-            diag = s.size >= 2.2 and br > 205
+            spikes = s.size >= 1.15 and br > 95
+            diag = s.size >= 1.8 and br > 140
             put_star(frame, s.x, s.y, s.size, br, s.col, spikes=spikes, diag=diag)
         frame.save(os.path.join(OUT, f"starlight-twinkle-{name}-{f}.png"))
     print(f"wrote {FRAMES} twinkle frames · {name}")
