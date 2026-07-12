@@ -2313,16 +2313,16 @@ scale slider {
 .app-pill-blue   { color: $neon-blue-soft; }
 
 /* -- workspace pills: crank the states (final word in the cascade) ---- */
+/* Same machined obsidian-vessel ring language as the right app rail:
+   every pill is a solid near-black keycap wrapped in a neon hairline. */
 .ws-pill {
-  color: rgba(232, 237, 245, 0.28);           /* empty = ghost numeral */
+  border-radius: 11px;
+  @include obsidian-vessel($nyxus-accent-primary, 0.5);
+  color: rgba(232, 237, 245, 0.42);
 }
 .ws-pill-occupied {
+  @include obsidian-vessel($nyxus-accent-primary, 0.9);
   color: $accent-primary-soft;
-  border: 1px solid rgba($nyxus-accent-primary, 0.60);
-  background: rgba($nyxus-accent-primary, 0.12);
-  box-shadow:
-    inset 0 0 12px rgba($nyxus-accent-primary, 0.22),
-    0 0 10px rgba($nyxus-accent-primary, 0.28);
   text-shadow: 0 0 8px rgba($nyxus-accent-primary, 0.55);
 }
 .ws-pill-active {
