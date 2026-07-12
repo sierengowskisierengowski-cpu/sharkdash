@@ -21,7 +21,7 @@
 ;; ─────────────────────────────────────────────────────────────────────
 
 ;; ── poll variables ────────────────────────────────────────────────────
-(defpoll TIME       :interval "1s"   :initial `date +'{"hms":"%H:%M:%S","hm":"%H:%M","date":"%a %d %b","long":"%A, %B %-d %Y"}'`
+(defpoll TIME       :interval "1s"   :initial '{"hms":"--:--:--","hm":"--:--","date":"...","long":"..."}'
                                      `date +'{"hms":"%H:%M:%S","hm":"%H:%M","date":"%a %d %b","long":"%A, %B %-d %Y"}'`)
 ;; ticker.sh runs at 10 fps to scroll one column per tick (true marquee).
 (defpoll TICKER     :interval "0.1s" :initial '{"text":"▌ NYXUS · DARK MIRROR · LIVE                                                  ","tooltip":"NYXUS"}'
@@ -250,13 +250,13 @@
                   POWERPROF.active == "power-saver" ? "pill p-pp pp-save" : "pill p-pp"}
           :onclick "~/.config/eww/scripts/qs-toggle.sh profile &"
           :tooltip "${POWERPROF.tooltip} · click to cycle"
-    "${POWERPROF.icon}  ${POWERPROF.label}"))
+    "${POWERPROF.icon}"))
 
 (defwidget updates_widget []
   (button :class {UPDATES.count > 24 ? "pill p-upd upd-many" : "pill p-upd"}
           :onclick "eww open --toggle updates"
           :tooltip "${UPDATES.tooltip} · click for update center"
-    "${UPDATES.icon}  ${UPDATES.label}"))
+    "${UPDATES.icon}"))
 
 (defwidget notifs_widget []
   (button :class {NOTIFS.paused == "true" ? "pill p-notif notif-dnd" :
@@ -265,7 +265,7 @@
           :onrightclick "dunstctl set-paused toggle &"
           :onmiddleclick "dunstctl close-all &"
           :tooltip "${NOTIFS.tooltip} · click panel · right-click DND · middle clear all"
-    "${NOTIFS.icon}  ${NOTIFS.label}"))
+    "${NOTIFS.total > 0 ? "${NOTIFS.icon} ${NOTIFS.label}" : NOTIFS.icon}"))
 
 (defwidget qs_widget []
   (button :class "pill qs-pill"
@@ -369,10 +369,10 @@
 (defwidget bar_bottom_layout []
   (centerbox :class "bar bar-bottom" :orientation "h"
     :style "background-image: linear-gradient(${PRISM.a}deg, rgba(0,0,0,0) 8%, rgba(80,225,190,${round(0.01 + STARLIGHT.tw * 0.022, 3)}) 32%, rgba(150,90,255,${round(0.015 + STARLIGHT.tw * 0.03, 3)}) 58%, rgba(255,73,148,${round(0.006 + STARLIGHT.tw * 0.012, 3)}) 76%, rgba(0,0,0,0) 92%), url('assets/starlight-twinkle-strip-${STARLIGHT.f}.png'), url('assets/starlight-strip.png'), linear-gradient(180deg, rgba(7,3,14,0.965), rgba(2,1,7,0.945)), linear-gradient(${PRISM.a}deg, #ff3cac 0%, #784bff 33%, #2bd2ff 66%, #ff3cac 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), inset 0 0 26px rgba(0,0,0,0.45);"
-    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 12 :halign "start"
-      (nyxus_brand) (heartbeat))
+    (box :class "bar-cluster cluster-left" :space-evenly false :spacing 10 :halign "start"
+      (nyxus_brand) (heartbeat) (syspulse_widget))
     (box :class "bar-cluster cluster-center" :space-evenly false :spacing 12 :halign "center"
-      (syspulse_widget) (cava_widget) (tray_dummy) (clock_widget))
+      (cava_widget) (clock_widget))
     ;; Right cluster carries 12 status pills — the most of any cluster.
     ;; :spacing 6 (low end of the contract's "tight" range, §2: 6–10px)
     ;; because at 8 the cluster overflowed and GTK ellipsized pill labels.

@@ -188,16 +188,21 @@ window, window.background, decoration {
 
 /* HOME-HUD micro buttons: near-black fill, 1px neon hairline, square-ish
    radius, mono type, hover bloom (mirrors style.py btn-nav/btn-icon). */
+/* Machined obsidian keycaps (rev 2026-07-12): same vessel + accent-ring
+   language as the side rails, so every button on every bar matches.
+   Glyph-forward: action pills are square caps, value pills keep their
+   numbers. min-height locks the cap silhouette; no letter-spacing
+   (it widened pills past their allocation and GTK ellipsized labels). */
 .pill {
-  padding: 2px 7px;
-  border-radius: 6px;
+  padding: 2px 8px;
+  min-height: 26px;
+  min-width: 18px;
+  border-radius: 9px;
   @include obsidian-vessel($nyxus-accent-primary);
   color: $text;
   font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
   font-weight: 700;
-  font-size: 10px;
-  /* no letter-spacing: it widened pills past their allocation and GTK
-     ellipsized the whole right cluster ("v...", "x...") */
+  font-size: 11px;
   transition: all 180ms ease;
 }
 .pill:hover {
