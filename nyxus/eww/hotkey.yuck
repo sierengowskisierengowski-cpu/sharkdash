@@ -1,0 +1,93 @@
+; ─────────────────────────────────────────────────────────────────────
+; NYXUS Hotkeys cheat-sheet overlay
+; Toggled by Super+/  →  eww open --toggle hotkey-cheatsheet
+; Data is fetched live from the nyxus-hotkeyd daemon via the CLI.
+; ─────────────────────────────────────────────────────────────────────
+
+(defvar hotkey-search "")
+
+;; rendered widget-literal body (labels per hotkey line), pushed live by
+;; hotkey-cheatsheet.sh `set <query>` when the user types in the search
+;; box, and refreshed on a slow poll otherwise.
+(defpoll HK_CONTENT
+  :interval "60s"
+  :initial '(label :class "hk-line" :xalign 0 :text "loading hotkeys…")'
+  `~/.config/eww/scripts/hotkey-cheatsheet.sh`)
+
+(defpoll hotkey-conflicts
+  :interval "60s"
+  :initial "0"
+  `nyxus-hotkey conflicts 2>/dev/null | grep -c '^⚠' || true`)
+
+(defwidget hotkey-row [combo desc category]
+  (box :class "hk-row" :orientation "h" :space-evenly false :spacing 12
+    (label :class "hk-combo"  :text combo)
+    (label :class "hk-desc"   :text desc :hexpand true :xalign 0)
+    (label :class "hk-cat"    :text category)))
+
+(defwidget hotkey-cheatsheet-content []
+  (box :class "hk-root" :orientation "v" :space-evenly false :spacing 8
+    (box :class "hk-header" :orientation "h" :space-evenly false :spacing 8
+      (label :class "hk-title" :text "⌘  Keyboard Shortcuts")
+      (label :hexpand true :xalign 1
+             :class "hk-conflict-pip"
+             :visible {hotkey-conflicts != "0"}
+             :text "${hotkey-conflicts} conflict(s)"))
+    (input :class "hk-search"
+           :onchange "~/.config/eww/scripts/hotkey-cheatsheet.sh set {} &"
+           :value hotkey-search
+           :timeout "1000ms")
+    (scroll :class "hk-scroll" :hscroll false :vscroll true :height 520
+      (literal :content HK_CONTENT))
+    (box :class "hk-footer" :orientation "h" :space-evenly true :spacing 8
+      (button :class "hk-btn"
+              :onclick "nyxus-hotkey reload && eww update HK_CONTENT=\"$(~/.config/eww/scripts/hotkey-cheatsheet.sh)\" &"
+              "↻  Reload")
+      (button :class "hk-btn"
+              :onclick "nyxus-hotkey conflicts | wl-copy && notify-send 'Conflicts copied' &"
+              "⚠  Conflicts")
+      (button :class "hk-btn"
+              :onclick "eww close hotkey-cheatsheet && nyxus-settings &"
+              "⚙  Edit")
+      (button :class "hk-btn hk-btn-close"
+              :onclick "eww close hotkey-cheatsheet"
+              "Close (Esc)"))))
+
+(defwindow hotkey-cheatsheet
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "720px" :height "640px"
+                      :anchor "center")
+  :stacking "overlay"
+  :focusable true
+  :namespace "nyxus-hotkey"
+  (hotkey-cheatsheet-content))
+
+; ─────────────────────────────────────────────────────────────────────
+; Recorder modal — opened by the GTK Settings page during Add/Edit
+; ─────────────────────────────────────────────────────────────────────
+
+(defvar recorder-text "Press any key combination…")
+
+(defwidget hk-recorder-content []
+  (box :class "hk-recorder" :orientation "v" :space-evenly false :spacing 12
+    (label :class "hk-rec-title" :text "Record Hotkey")
+    (label :class "hk-rec-text"  :text recorder-text)
+    (box :orientation "h" :space-evenly true :spacing 8
+      (button :class "hk-btn"
+              :onclick "RES=$(nyxus-hotkey record 2>/dev/null); eww update recorder-text=\"$RES\""
+              "● Record")
+      (button :class "hk-btn"
+              :onclick "printf '%s' '${recorder-text}' | wl-copy && notify-send 'Combo copied' &"
+              "Copy")
+      (button :class "hk-btn hk-btn-close"
+              :onclick "eww close hotkey-recorder"
+              "Done"))))
+
+(defwindow hotkey-recorder
+  :monitor 0
+  :geometry (geometry :x "0" :y "0" :width "420px" :height "220px"
+                      :anchor "center")
+  :stacking "overlay"
+  :focusable true
+  :namespace "nyxus-hotkey"
+  (hk-recorder-content))
