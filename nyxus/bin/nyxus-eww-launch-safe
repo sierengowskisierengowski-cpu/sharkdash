@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# NYXUS - duplicate-proof eww launcher wrapper.
+# If a client command ever auto-spawns a second eww server (shows up in
+# ps as e.g. "eww open calendar" parented to init), BOTH servers draw
+# all four bars a few px apart - the "two bars" ghost. Kill every eww
+# process, wipe stale sockets, then hand off to the stock launcher so
+# exactly one daemon owns the windows.
+set -u
+
+pkill -f '^eww daemon' 2>/dev/null
+# stray auto-spawned servers keep the client argv ("eww open ...", "eww reload")
+for pid in $(pgrep -x eww 2>/dev/null; pgrep -f '^eww (open|open-many|reload|close)' 2>/dev/null); do
+  kill "$pid" 2>/dev/null
+done
+sleep 0.5
+rm -f "${XDG_RUNTIME_DIR:-/tmp}"/eww-server_* 2>/dev/null
+
+setsid eww daemon >/dev/null 2>&1 < /dev/null &
+exec /usr/local/bin/nyxus-eww-launch
