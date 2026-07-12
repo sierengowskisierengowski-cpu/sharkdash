@@ -22,7 +22,7 @@
 
 ;; ── poll variables ────────────────────────────────────────────────────
 (defpoll TIME       :interval "1s"   :initial '{"hms":"--:--:--","hm":"--:--","date":"...","long":"..."}'
-                                     `date +'{"hms":"%H:%M:%S","hm":"%H:%M","date":"%a %d %b","long":"%A, %B %-d %Y"}'`)
+                                     "~/.config/eww/scripts/time.sh")
 ;; ticker.sh runs at 10 fps to scroll one column per tick (true marquee).
 (defpoll TICKER     :interval "0.1s" :initial '{"text":"▌ NYXUS · DARK MIRROR · LIVE                                                  ","tooltip":"NYXUS"}'
                                      "~/.config/eww/scripts/ticker.sh")
@@ -151,13 +151,19 @@
 ;; `alert` (STARFALL rev 2026-07-11): 1 flips the tile to the ember
 ;; state — border/value glow in fireball gold so a stressed metric
 ;; reads like the comet just landed on it.
-(defwidget hud_tile [hue glyph label value ?tip ?alert]
+;; Reactor-cell tile (rev 2026-07-12): glyph + label + value on top, and
+;; when ?pct is given, a live 2px charge-bar underneath whose fill tracks
+;; the metric (Home System-Pulse DNA, now inside the bar itself).
+(defwidget hud_tile [hue glyph label value ?tip ?alert ?pct]
   (box :class "hud-tile hud-tile-${hue}${(alert ?: 0) == 1 ? ' hud-tile-alert' : ''}"
-       :space-evenly false :spacing 5
+       :orientation "v" :space-evenly false :spacing 2
        :tooltip "${tip ?: label}"
-    (label :class "hud-tile-glyph" :text glyph)
-    (label :class "hud-tile-label" :text label)
-    (label :class "hud-tile-value" :text value)))
+    (box :space-evenly false :spacing 5
+      (label :class "hud-tile-glyph" :text glyph)
+      (label :class "hud-tile-label" :text label)
+      (label :class "hud-tile-value" :text value))
+    (box :class "hud-tile-bar hud-tile-bar-${hue}${(pct ?: -1) >= 0 ? '' : ' hud-tile-bar-hidden'}"
+         :style "${(pct ?: -1) >= 0 ? 'background-size: ' + (pct ?: 0) + '% 100%' : ''}")))
 
 (defwidget cava_widget []
   (box :class "cava-box" :space-evenly false :tooltip "Audio visualizer"
@@ -167,16 +173,16 @@
 ;; one flat capsule — HOME-HUD reference language (rev 2026-07-09).
 (defwidget syspulse_widget []
   (box :class "syspulse" :space-evenly false :spacing 6
-    (hud_tile :hue "pink"   :glyph "󰘚" :label "CPU"  :value "${SYSPULSE.cpu}%"  :tip "CPU load · 1m load ${SYSPULSE.load}" :alert {SYSPULSE.chot})
-    (hud_tile :hue "purple" :glyph "󰍛" :label "RAM"  :value "${SYSPULSE.mem}%"  :tip "Memory used · swap ${SYSPULSE.swap}%" :alert {SYSPULSE.mhot})
-    (hud_tile :hue "blue"   :glyph "󰢮" :label "GPU"  :value "${SYSPULSE.gpu}%"  :tip "GPU · ${SYSPULSE.gputemp}°C" :alert {SYSPULSE.ghot})
+    (hud_tile :hue "pink"   :glyph "󰘚" :label "CPU"  :value "${SYSPULSE.cpu}%"  :tip "CPU load · 1m load ${SYSPULSE.load}" :alert {SYSPULSE.chot} :pct {SYSPULSE.cpu})
+    (hud_tile :hue "purple" :glyph "󰍛" :label "RAM"  :value "${SYSPULSE.mem}%"  :tip "Memory used · swap ${SYSPULSE.swap}%" :alert {SYSPULSE.mhot} :pct {SYSPULSE.mem})
+    (hud_tile :hue "blue"   :glyph "󰢮" :label "GPU"  :value "${SYSPULSE.gpu}%"  :tip "GPU · ${SYSPULSE.gputemp}°C" :alert {SYSPULSE.ghot} :pct {SYSPULSE.gpu == "--" ? -1 : SYSPULSE.gpu})
     (hud_tile :hue "orange" :glyph "󰔏" :label "TMP"  :value "${SYSPULSE.temp}°" :tip "CPU temperature" :alert {SYSPULSE.thot})
     (hud_tile :hue "green"  :glyph "󰈐" :label "FAN"  :value "${SYSPULSE.fan}"   :tip "Fan speed (RPM)")
     (hud_tile :hue "gold"   :glyph "󰛳" :label "NET"  :value "↓${SYSPULSE.netrx} ↑${SYSPULSE.nettx}" :tip "Network rx / tx per second")))
 
 (defwidget clock_widget []
   (button :class "clock"
-          :onclick "eww open --toggle dashboard"
+          :onclick "eww open --toggle dashboard &"
           :tooltip "${TIME.long} · click for dashboard"
     (box :orientation "h" :space-evenly false :spacing 10
       (label :class "clock-glyph" :text "◷" :style "opacity: ${NEONFLICK};")
@@ -185,7 +191,7 @@
 
 (defwidget audio_widget []
   (button :class "pill p-audio"
-          :onclick "eww open --toggle mixer"
+          :onclick "eww open --toggle mixer &"
           :onrightclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ~/.config/eww/scripts/osd-show.sh osd-volume &"
           :tooltip "${AUDIO.tooltip} · click mixer · right-click mute"
     "${AUDIO.icon}  ${AUDIO.vol}%"))
@@ -198,7 +204,7 @@
 
 (defwidget net_widget []
   (button :class "pill p-net"
-          :onclick "eww open --toggle wifi"
+          :onclick "eww open --toggle wifi &"
           :onrightclick "~/.config/eww/scripts/wifi-action.sh toggle &"
           :tooltip "${NETWORK.tooltip} · click wifi panel · right-click toggle radio"
     "${NETWORK.icon}  ${NETWORK.label}"))
@@ -206,7 +212,7 @@
 (defwidget bluetooth_widget []
   (button :class {BLUETOOTH.powered == "off" ? "pill p-bt bt-off" :
                   BLUETOOTH.connected > 0    ? "pill p-bt bt-conn" : "pill p-bt"}
-          :onclick "eww open --toggle bluetooth"
+          :onclick "eww open --toggle bluetooth &"
           :onrightclick "${BLUETOOTH.powered == 'off' ? 'bluetoothctl power on' : 'bluetoothctl power off'} &"
           :tooltip "${BLUETOOTH.tooltip} · click panel · right-click toggle"
     "  ${BLUETOOTH.label}"))
@@ -220,7 +226,7 @@
 
 (defwidget brightness_widget []
   (button :class "pill p-brt"
-          :onclick "eww open --toggle brightness-flyout"
+          :onclick "eww open --toggle brightness-flyout &"
           :onrightclick "brightnessctl set 10%- && ~/.config/eww/scripts/osd-show.sh osd-brightness &"
           :tooltip "Brightness ${BACKLIGHT.percent}% · click panel · right-click decrease"
     "☼  ${BACKLIGHT.percent}%"))
@@ -254,14 +260,14 @@
 
 (defwidget updates_widget []
   (button :class {UPDATES.count > 24 ? "pill p-upd upd-many" : "pill p-upd"}
-          :onclick "eww open --toggle updates"
+          :onclick "eww open --toggle updates &"
           :tooltip "${UPDATES.tooltip} · click for update center"
     "${UPDATES.icon}"))
 
 (defwidget notifs_widget []
   (button :class {NOTIFS.paused == "true" ? "pill p-notif notif-dnd" :
                   NOTIFS.total > 0        ? "pill p-notif notif-on"  : "pill p-notif"}
-          :onclick "eww open --toggle notifications"
+          :onclick "eww open --toggle notifications &"
           :onrightclick "dunstctl set-paused toggle &"
           :onmiddleclick "dunstctl close-all &"
           :tooltip "${NOTIFS.tooltip} · click panel · right-click DND · middle clear all"
@@ -269,19 +275,19 @@
 
 (defwidget qs_widget []
   (button :class "pill qs-pill"
-          :onclick "eww open --toggle quicksettings"
+          :onclick "eww open --toggle quicksettings &"
           :tooltip "Quick settings"
     "⚙"))
 
 (defwidget cal_widget []
   (button :class "pill cal-pill"
-          :onclick "eww open --toggle calendar"
+          :onclick "eww open --toggle calendar &"
           :tooltip "Calendar · ${TIME.long}"
     "▦"))
 
 (defwidget power_button []
   (button :class "pill power-pill"
-          :onclick "eww open --toggle powermenu"
+          :onclick "eww open --toggle powermenu &"
           :tooltip "Power menu"
     "⏻"))
 
@@ -314,11 +320,11 @@
 ;; yuck cannot dynamically index a JSON property by an int, so each pill
 ;; receives its `occ` boolean as a parameter sourced from the matching
 ;; WORKSPACES.occN field emitted by scripts/workspaces.sh.
-(defwidget workspace_pill [id occ]
-  (button :class {WORKSPACES.active == id ? "ws-pill ws-pill-active" :
-                  (occ ?: false)          ? "ws-pill ws-pill-occupied" :
-                                            "ws-pill"}
-          :onclick "hyprctl dispatch workspace ${id}"
+(defwidget workspace_pill [id occ ?hue]
+  (button :class {WORKSPACES.active == id ? "ws-pill ws-pill-active ws-pill-${hue ?: 'pink'}" :
+                  (occ ?: false)          ? "ws-pill ws-pill-occupied ws-pill-${hue ?: 'pink'}" :
+                                            "ws-pill ws-pill-${hue ?: 'pink'}"}
+          :onclick "hyprctl dispatch workspace ${id} &"
           :tooltip "Workspace ${id}"
     "${id}"))
 
@@ -329,16 +335,16 @@
 (defwidget workspaces_rail []
   (box :class "ws-rail" :orientation "v" :space-evenly false :spacing 6 :valign "center"
     :style "background-image: linear-gradient(${PRISM.a}deg, rgba(0,0,0,0) 8%, rgba(80,225,190,${round(0.01 + STARLIGHT.tw * 0.022, 3)}) 32%, rgba(150,90,255,${round(0.015 + STARLIGHT.tw * 0.03, 3)}) 58%, rgba(255,73,148,${round(0.006 + STARLIGHT.tw * 0.012, 3)}) 76%, rgba(0,0,0,0) 92%), url('assets/starlight-twinkle-rail-${STARLIGHT.f}.png'), url('assets/starlight-rail.png'), linear-gradient(170deg, rgba(7,3,14,0.965), rgba(2,1,7,0.945)), linear-gradient(${PRISM.a}deg, #ff3cac 0%, #784bff 33%, #2bd2ff 66%, #ff3cac 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), inset 0 0 22px rgba(0,0,0,0.45);"
-    (workspace_pill :id 1  :occ {WORKSPACES.occ1})
-    (workspace_pill :id 2  :occ {WORKSPACES.occ2})
-    (workspace_pill :id 3  :occ {WORKSPACES.occ3})
-    (workspace_pill :id 4  :occ {WORKSPACES.occ4})
-    (workspace_pill :id 5  :occ {WORKSPACES.occ5})
-    (workspace_pill :id 6  :occ {WORKSPACES.occ6})
-    (workspace_pill :id 7  :occ {WORKSPACES.occ7})
-    (workspace_pill :id 8  :occ {WORKSPACES.occ8})
-    (workspace_pill :id 9  :occ {WORKSPACES.occ9})
-    (workspace_pill :id 10 :occ {WORKSPACES.occ10})))
+    (workspace_pill :id 1  :occ {WORKSPACES.occ1}  :hue "pink")
+    (workspace_pill :id 2  :occ {WORKSPACES.occ2}  :hue "green")
+    (workspace_pill :id 3  :occ {WORKSPACES.occ3}  :hue "purple")
+    (workspace_pill :id 4  :occ {WORKSPACES.occ4}  :hue "gold")
+    (workspace_pill :id 5  :occ {WORKSPACES.occ5}  :hue "orange")
+    (workspace_pill :id 6  :occ {WORKSPACES.occ6}  :hue "blue")
+    (workspace_pill :id 7  :occ {WORKSPACES.occ7}  :hue "pink")
+    (workspace_pill :id 8  :occ {WORKSPACES.occ8}  :hue "green")
+    (workspace_pill :id 9  :occ {WORKSPACES.occ9}  :hue "purple")
+    (workspace_pill :id 10 :occ {WORKSPACES.occ10} :hue "gold")))
 
 ;; `hue` gives every rail icon its own neon hover identity
 ;; (.app-pill-<hue> in eww.scss — HOME-HUD language, rev 2026-07-09).

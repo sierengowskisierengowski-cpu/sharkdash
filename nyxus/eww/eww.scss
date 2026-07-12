@@ -119,24 +119,16 @@ window, window.background, decoration {
    at .70-.86 so Hyprland's dual-kawase layer blur reads through the
    glass (the DARK MIRROR frosted look) without killing legibility. */
 
+/* Structural shell only: starfield + prism rim paint via inline :style
+   in eww.yuck. A second background here stacked a ghost rim (the
+   "double bar at the ends" bug). */
 .bar {
   border: 1px solid transparent;
   border-radius: 16px;
   padding: 4px 12px;
-  background-image:
-    linear-gradient(180deg,
-      rgba(13, 16, 28, 0.84) 0%,
-      rgba(5, 6, 10, 0.72) 100%),
-    linear-gradient(100deg,
-      rgba($nyxus-accent-primary, 0.70) 0%,
-      rgba($nyxus-accent-ok, 0.55) 32%,
-      rgba($nyxus-accent-secondary, 0.70) 64%,
-      rgba($nyxus-accent-warn, 0.60) 100%);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    inset 0 0 36px rgba($nyxus-accent-ok, 0.10);
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
 
 /* Window surface is 100% wide; this margin cuts the symmetric floating
@@ -148,16 +140,9 @@ window, window.background, decoration {
   padding: 5px 12px;
   min-height: 36px;
   border-top: 2px solid transparent;
-  background-image:
-    linear-gradient(180deg,
-      rgba(13, 16, 28, 0.86),
-      rgba(5, 6, 10, 0.74)),
-    linear-gradient(90deg,
-      $nyxus-accent-primary 0%, $nyxus-accent-ok 26%, $nyxus-accent-secondary 52%, $nyxus-accent-warn 78%, $nyxus-accent-primary 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -16px 34px rgba($nyxus-accent-primary, 0.10),
-    inset 0 16px 34px rgba($nyxus-accent-secondary, 0.06);
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
 
 /* Floating ticker ribbon - mirrors the bottom bar's inset, thinner rim
@@ -167,17 +152,9 @@ window, window.background, decoration {
   padding: 2px 10px;
   min-height: 20px;
   border-radius: 12px;
-  background-image:
-    linear-gradient(180deg,
-      rgba(10, 13, 24, 0.82),
-      rgba(5, 6, 10, 0.70)),
-    linear-gradient(90deg,
-      rgba($nyxus-accent-secondary, 0.65) 0%,
-      rgba($nyxus-accent-ok, 0.55) 45%,
-      rgba($nyxus-accent-primary, 0.65) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    inset 0 -10px 24px rgba($nyxus-accent-ok, 0.08);
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
 .bar-bottom > * { min-height: 0; }
 .bar-bottom .bar-cluster { min-height: 0; }
@@ -420,51 +397,19 @@ window, window.background, decoration {
   border: 1px solid transparent;
   border-radius: 18px;
   padding: 12px 6px;
-  background-image:
-    linear-gradient(170deg,
-      rgba(11, 14, 24, 0.84),
-      rgba(5, 6, 10, 0.72)),
-    linear-gradient(180deg,
-      rgba($nyxus-accent-primary, 0.72) 0%,
-      rgba($nyxus-accent-ok, 0.55) 50%,
-      rgba($nyxus-accent-secondary, 0.72) 100%);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 26px rgba($nyxus-accent-primary, 0.08);
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
-/* HOME-HUD neon pills (rev 2026-07-09): empty = ghost hairline square,
-   occupied = dim neon outline + inner glow, active = solid neon slab
-   with hard bloom. Mono numerals like the HUD micro-labels. */
+/* Workspace pills: same machined obsidian + per-hue neon ring as app rail. */
 .ws-pill {
-  min-width: 36px;
-  min-height: 36px;
-  border-radius: 8px;
-  background: rgba(7, 5, 14, 0.60);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  color: $grey-ghost;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 11px;
   font-family: "JetBrainsMono Nerd Font", "JetBrains Mono", monospace;
   font-weight: 700;
   font-size: 12px;
-  transition: all 220ms ease;
-}
-.ws-pill:hover {
-  background: rgba($nyxus-accent-primary, 0.13);
-  border-color: rgba($nyxus-accent-primary, 0.60);
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba($nyxus-accent-primary, 0.65);
-  box-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.30);
-}
-.ws-pill-active {
-  background: linear-gradient(135deg, $nyxus-accent-primary, $nyxus-accent-secondary);
-  color: #05060a;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  text-shadow: none;
-  box-shadow:
-    0 0 16px rgba($nyxus-accent-primary, 0.75),
-    0 0 30px rgba($nyxus-accent-secondary, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  transition: all 180ms ease;
 }
 
 /* -- APP RAIL (right) ----------------------------------------------- */
@@ -473,19 +418,9 @@ window, window.background, decoration {
   border: 1px solid transparent;
   border-radius: 18px;
   padding: 12px 6px;
-  background-image:
-    linear-gradient(190deg,
-      rgba(11, 14, 24, 0.84),
-      rgba(5, 6, 10, 0.72)),
-    linear-gradient(180deg,
-      rgba($nyxus-accent-secondary, 0.72) 0%,
-      rgba($nyxus-accent-ok, 0.55) 50%,
-      rgba($nyxus-accent-primary, 0.72) 100%);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 26px rgba($nyxus-accent-secondary, 0.08);
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
 }
 .app-pill {
   min-width: 38px;
@@ -2284,6 +2219,24 @@ scale slider {
 
 .hud-tile-strip { padding: 0 6px; }
 
+/* live charge-bar under each reactor tile (Home System-Pulse DNA) */
+.hud-tile-bar {
+  min-height: 2px;
+  border-radius: 1px;
+  margin-top: 1px;
+  background-color: rgba(255, 255, 255, 0.06);
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+.hud-tile-bar-hidden { min-height: 0; margin: 0; opacity: 0; }
+.hud-tile-bar-pink   { background-image: linear-gradient(90deg, $nyxus-accent-primary, $nyxus-accent-primary); box-shadow: 0 0 5px rgba($nyxus-accent-primary, 0.45); }
+.hud-tile-bar-purple { background-image: linear-gradient(90deg, $nyxus-accent-ok, $nyxus-accent-ok); box-shadow: 0 0 5px rgba($nyxus-accent-ok, 0.45); }
+.hud-tile-bar-blue   { background-image: linear-gradient(90deg, $neon-blue, $neon-blue); box-shadow: 0 0 5px rgba($neon-blue, 0.45); }
+.hud-tile-bar-orange { background-image: linear-gradient(90deg, $neon-orange, $neon-orange); box-shadow: 0 0 5px rgba($neon-orange, 0.45); }
+.hud-tile-bar-green  { background-image: linear-gradient(90deg, $nyxus-accent-secondary, $nyxus-accent-secondary); box-shadow: 0 0 5px rgba($nyxus-accent-secondary, 0.45); }
+.hud-tile-bar-gold   { background-image: linear-gradient(90deg, $nyxus-accent-warn, $nyxus-accent-warn); box-shadow: 0 0 5px rgba($nyxus-accent-warn, 0.45); }
+.hud-tile-bar-red    { background-image: linear-gradient(90deg, $neon-red, $neon-red); box-shadow: 0 0 5px rgba($neon-red, 0.45); }
+
 /* -- app rail: per-app neon hover identities -------------------------- */
 .app-pill-pink:hover   { border-color: $nyxus-accent-primary; color: #ffffff;
   background: rgba($nyxus-accent-primary, 0.14);
@@ -2325,11 +2278,39 @@ scale slider {
   @include obsidian-vessel($nyxus-accent-primary, 0.5);
   color: rgba(232, 237, 245, 0.42);
 }
+.ws-pill-pink   { @include obsidian-vessel($nyxus-accent-primary, 0.65); color: $accent-primary-soft; }
+.ws-pill-green  { @include obsidian-vessel($nyxus-accent-secondary, 0.65); color: $accent-secondary-soft; }
+.ws-pill-purple { @include obsidian-vessel($nyxus-accent-ok, 0.65); color: $accent-ok-soft; }
+.ws-pill-gold   { @include obsidian-vessel($nyxus-accent-warn, 0.65); color: $accent-warn-soft; }
+.ws-pill-orange { @include obsidian-vessel($neon-orange, 0.65); color: $neon-orange-soft; }
+.ws-pill-blue   { @include obsidian-vessel($neon-blue, 0.65); color: $neon-blue-soft; }
 .ws-pill-occupied {
-  @include obsidian-vessel($nyxus-accent-primary, 0.9);
-  color: $accent-primary-soft;
   text-shadow: 0 0 8px rgba($nyxus-accent-primary, 0.55);
 }
+.ws-pill-pink:hover   { border-color: $nyxus-accent-primary; color: #ffffff;
+  background: rgba($nyxus-accent-primary, 0.14);
+  text-shadow: 0 0 12px rgba($nyxus-accent-primary, 0.85);
+  box-shadow: 0 0 16px rgba($nyxus-accent-primary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-green:hover  { border-color: $nyxus-accent-secondary; color: #ffffff;
+  background: rgba($nyxus-accent-secondary, 0.14);
+  text-shadow: 0 0 12px rgba($nyxus-accent-secondary, 0.85);
+  box-shadow: 0 0 16px rgba($nyxus-accent-secondary, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-purple:hover { border-color: $nyxus-accent-ok; color: #ffffff;
+  background: rgba($nyxus-accent-ok, 0.14);
+  text-shadow: 0 0 12px rgba($nyxus-accent-ok, 0.85);
+  box-shadow: 0 0 16px rgba($nyxus-accent-ok, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-gold:hover   { border-color: $nyxus-accent-warn; color: #ffffff;
+  background: rgba($nyxus-accent-warn, 0.14);
+  text-shadow: 0 0 12px rgba($nyxus-accent-warn, 0.85);
+  box-shadow: 0 0 16px rgba($nyxus-accent-warn, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-orange:hover { border-color: $neon-orange; color: #ffffff;
+  background: rgba($neon-orange, 0.14);
+  text-shadow: 0 0 12px rgba($neon-orange, 0.85);
+  box-shadow: 0 0 16px rgba($neon-orange, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
+.ws-pill-blue:hover   { border-color: $neon-blue; color: #ffffff;
+  background: rgba($neon-blue, 0.14);
+  text-shadow: 0 0 12px rgba($neon-blue, 0.85);
+  box-shadow: 0 0 16px rgba($neon-blue, 0.50), inset 0 1px 0 rgba(255,255,255,0.15); }
 .ws-pill-active {
   background: linear-gradient(135deg, $nyxus-accent-primary, $nyxus-accent-secondary);
   color: #05060a;
