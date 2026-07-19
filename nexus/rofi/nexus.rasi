@@ -1,0 +1,52 @@
+* {
+    bg:        #1a1b26;
+    bg-alt:    #24283b;
+    fg:        #c0caf5;
+    fg-alt:    #565f89;
+    accent:    #7aa2f7;
+    urgent:    #f7768e;
+    background-color: transparent;
+    text-color: @fg;
+}
+
+window {
+    width: 480px;
+    border-radius: 14px;
+    background-color: @bg;
+    padding: 16px;
+}
+
+mainbox {
+    spacing: 12px;
+}
+
+inputbar {
+    background-color: @bg-alt;
+    border-radius: 10px;
+    padding: 10px 14px;
+    spacing: 10px;
+    children: [ prompt, entry ];
+}
+
+prompt { text-color: @accent; }
+entry  { placeholder: "Search…"; placeholder-color: @fg-alt; }
+
+listview {
+    lines: 8;
+    scrollbar: false;
+    spacing: 4px;
+}
+
+element {
+    padding: 8px 12px;
+    border-radius: 8px;
+    spacing: 10px;
+}
+
+element selected {
+    background-color: @accent;
+    text-color: @bg;
+}
+
+element-icon { size: 22px; }
+element-text { vertical-align: 0.5; }
